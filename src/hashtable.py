@@ -63,11 +63,14 @@ class HashTable:
         # print(newItem, hashed_key, index)
         if self.storage[index] == None:
             self.storage[index] = newItem
-            print('line 66','length: ', len(self.storage) )
+            print('line 66','first in index ', index, ' : ', self.storage[index].value)
         else:
-            return 'duplicate hash'
-
-
+            node = self.storage[index]
+            while node.next != None:
+                node = node.next
+            
+            node.next = newItem
+            print('same index')
 
 
 
@@ -103,9 +106,22 @@ class HashTable:
         index = self._hash_mod(hashed_key)
 
         if self.storage[index] == None:
-            return 'key not found'
+            return 'line 109 key not found'
+        else:
+            node = self.storage[index]
+            # print('testing',node.key)
+            while node.key != key:
+                print('line 114', node.next.key, index)
+                if node == None:
+                    return 'line 116 key not found'
 
-        return self.storage[index]
+                node = node.next
+            
+            if node == None:
+                return 'line 121 key not found'
+            else:
+                return node.value
+
 
 
     def resize(self):
@@ -116,16 +132,20 @@ class HashTable:
         Fill this in.
         '''
         self.capacity *= 2
-        new_storage = [None] * self.capacity
-        for i in range(len(self.storage)):
-            new_storage[i] = self.storage[i]
-        self.storage = new_storage
+        old_storage = self.storage
+        self.storage = [None] * self.capacity
+        for i in old_storage:
+            current = i
+            while current != None:
+                self.insert(current.key, current.value)
+                current = current.next
+
 
 
 
 
 if __name__ == "__main__":
-    ht = HashTable(5)
+    ht = HashTable(2)
 
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")

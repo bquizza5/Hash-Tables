@@ -54,23 +54,28 @@ class HashTable:
 
         Fill this in.
         '''
-        # if self.capacity == len(self.storage):
-        #     self.resize()
-
-        newItem = LinkedPair(key, value)
+        
         hashed_key = self._hash(key)
         index = self._hash_mod(hashed_key)
-        # print(newItem, hashed_key, index)
-        if self.storage[index] == None:
-            self.storage[index] = newItem
-            print('line 66','first in index ', index, ' : ', self.storage[index].value)
+        if self.retrieve(key) == 'key not found':
+            newItem = LinkedPair(key, value)
+            if self.storage[index] == None:
+                self.storage[index] = newItem
+            else:
+                node = self.storage[index]
+                while node.next != None:
+                    node = node.next
+                
+                node.next = newItem
         else:
             node = self.storage[index]
-            while node.next != None:
+            while node.key != key:
+                if node.next == None:
+                    return 'line 73 error. node.next should never == None'
                 node = node.next
+            node.value = value
             
-            node.next = newItem
-            print('same index')
+
 
 
 
@@ -82,14 +87,29 @@ class HashTable:
 
         Fill this in.
         '''
-        hashed_key = self._hash(key)
-        index = self._hash_mod(hashed_key)
 
-        if self.storage[index] == [None]:
-            return 'key not found'
 
-        self.storage[index] = [None]
-        return 'key value pair removed'
+        if self.retrieve(key) == 'key not found':
+            return None
+
+        else:
+
+            hashed_key = self._hash(key)
+            index = self._hash_mod(hashed_key)
+
+            if self.storage[index].key == key:
+                self.storage[index] = self.storage[index].next
+            else:
+                prev = self.storage[index]
+                current = self.storage[index].next
+                while current.key != key:
+                    if current == None:
+                        return None
+                    else:
+                        prev = current
+                        current = current.next
+                prev.next = current.next
+
 
 
 
@@ -105,20 +125,20 @@ class HashTable:
         hashed_key = self._hash(key)
         index = self._hash_mod(hashed_key)
 
-        if self.storage[index] == None:
-            return 'line 109 key not found'
+        if not self.storage[index]:
+            return 'key not found'
         else:
+
             node = self.storage[index]
-            # print('testing',node.key)
             while node.key != key:
-                print('line 114', node.next.key, index)
-                if node == None:
-                    return 'line 116 key not found'
+
+                if node.next == None:
+                    return 'key not found'
 
                 node = node.next
             
             if node == None:
-                return 'line 121 key not found'
+                return 'key not found'
             else:
                 return node.value
 
@@ -150,7 +170,7 @@ if __name__ == "__main__":
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")
     ht.insert("line_3", "Linked list saves the day!")
-    print(ht.storage)
+    print('***items added***')
 
 
     print("")
@@ -168,11 +188,12 @@ if __name__ == "__main__":
     print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # Test if data intact after resizing
+    ht.remove('line_3')
+    ht.remove('line_1')
     print(ht.retrieve("line_1"))
     print(ht.retrieve("line_2"))
     print(ht.retrieve("line_3"))
-    print(len(ht.storage))
-    print(ht.storage)
+
 
     print("")
 
